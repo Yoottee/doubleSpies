@@ -82,7 +82,7 @@ def test_french_word_generation():
     # Test creating a session to trigger word generation
     session_data = test_api_endpoint(
         "POST", "/create-session",
-        data={"player_name": "TestHost", "is_public": True},
+        params={"player_name": "TestHost", "is_public": True},
         test_name="French word API - Create session"
     )
     
