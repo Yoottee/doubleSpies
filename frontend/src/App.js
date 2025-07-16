@@ -559,22 +559,52 @@ function App() {
   const renderLobby = () => (
     <div className="screen lobby-screen">
       <div className="spy-background">
+        <MatrixRain />
+        <Particles />
         <div className="content-overlay">
-          <h2 className="screen-title">Salon d'attente</h2>
+          <TypingText text="Salon d'attente" className="screen-title" speed={60} />
           
           {sessionCode && (
             <div className="session-code">
               <p>Code de la partie: <strong>{sessionCode}</strong></p>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ 
+                    width: `${(gameSession?.players?.length || 0) * 5}%` 
+                  }}
+                ></div>
+              </div>
             </div>
           )}
           
           <div className="player-list">
-            <h3>Joueurs ({gameSession?.players?.length || 0}/20)</h3>
+            <div className="player-count">
+              <div className={`player-count-badge ${
+                gameSession?.players?.length === 20 ? 'player-count-full' : 
+                gameSession?.players?.length >= 10 ? 'player-count-ready' : ''
+              }`}>
+                👥 {gameSession?.players?.length || 0}/20 joueurs
+              </div>
+            </div>
             <div className="players-grid">
-              {gameSession?.players?.map(player => (
-                <div key={player.id} className={`player-card ${player.is_host ? 'host' : ''}`}>
+              {gameSession?.players?.map((player, index) => (
+                <div 
+                  key={player.id} 
+                  className={`player-card ${player.is_host ? 'host' : ''}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   <span className="player-name">{player.name}</span>
-                  {player.is_host && <span className="host-badge">Hôte</span>}
+                  {player.is_host && <span className="host-badge">👑 Hôte</span>}
+                  <div className="player-status online">● En ligne</div>
+                </div>
+              ))}
+              
+              {/* Placeholder cards for missing players */}
+              {Array.from({ length: 20 - (gameSession?.players?.length || 0) }, (_, i) => (
+                <div key={`empty-${i}`} className="player-card" style={{ opacity: 0.3 }}>
+                  <span className="player-name">En attente...</span>
+                  <div className="player-status offline">● Libre</div>
                 </div>
               ))}
             </div>
@@ -582,27 +612,40 @@ function App() {
           
           {gameMessage && (
             <div className="game-message">
-              {gameMessage}
+              <TypingText text={gameMessage} speed={50} />
             </div>
           )}
           
           {isHost && gameSession?.players?.length === 20 && (
-            <button className="spy-button primary large" onClick={startGame}>
-              Commencer la partie
+            <button className="spy-button primary large pulse" onClick={startGame}>
+              🚀 Commencer la partie
             </button>
           )}
           
-          {!isHost && (
-            <p className="waiting-message">En attente que l'hôte démarre la partie...</p>
+          {isHost && gameSession?.players?.length < 20 && (
+            <div className="waiting-message">
+              <TypingText 
+                text={`En attente de ${20 - (gameSession?.players?.length || 0)} joueurs pour commencer...`} 
+                speed={50} 
+              />
+            </div>
           )}
           
-          {gameSession?.players?.length < 20 && (
-            <p className="waiting-message">
-              En attente de {20 - (gameSession?.players?.length || 0)} joueurs...
-            </p>
+          {!isHost && (
+            <div className="waiting-message">
+              <TypingText text="En attente que l'hôte démarre la partie..." speed={50} />
+            </div>
           )}
+          
+          <button 
+            className="spy-button tertiary" 
+            onClick={() => setCurrentScreen('home')}
+          >
+            ← Quitter le salon
+          </button>
         </div>
       </div>
+      <ConnectionStatus ws={ws} />
     </div>
   );
 
