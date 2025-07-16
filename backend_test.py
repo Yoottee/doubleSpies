@@ -405,7 +405,7 @@ def test_data_validation_and_security():
     # Test duplicate player names
     session_data = test_api_endpoint(
         "POST", "/create-session",
-        data={"player_name": "UniqueHost", "is_public": True},
+        params={"player_name": "UniqueHost", "is_public": True},
         test_name="Validation - Create session for duplicate name test"
     )
     
