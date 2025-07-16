@@ -263,10 +263,12 @@ function App() {
       wsRef.current.close();
     }
     
+    setConnectionStatus('connecting');
     const websocket = new WebSocket(`${WS_URL}/ws/${sessionId}/${playerId}`);
     
     websocket.onopen = () => {
       console.log('WebSocket connected');
+      setConnectionStatus('connected');
     };
     
     websocket.onmessage = (event) => {
@@ -276,6 +278,18 @@ function App() {
     
     websocket.onclose = () => {
       console.log('WebSocket disconnected');
+      setConnectionStatus('disconnected');
+      // Auto-reconnect after 3 seconds
+      setTimeout(() => {
+        if (sessionId && playerId) {
+          connectWebSocket();
+        }
+      }, 3000);
+    };
+    
+    websocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setConnectionStatus('disconnected');
     };
     
     wsRef.current = websocket;
