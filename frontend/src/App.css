@@ -256,11 +256,11 @@ body {
   z-index: -2;
 }
 
-/* Spy-themed backgrounds */
+/* Advanced Spy-themed backgrounds */
 .spy-background {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);
   
   &::before {
     content: '';
@@ -270,11 +270,22 @@ body {
     width: 100%;
     height: 100%;
     background-image: 
-      url('https://images.unsplash.com/photo-1511954404553-67ad24c63441?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwyfHxzcHl8ZW58MHx8fGJsYWNrfDE3NTI2ODEwMDR8MA&ixlib=rb-4.1.0&q=85');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    opacity: 0.1;
+      radial-gradient(circle at 20% 50%, rgba(120, 0, 255, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 0, 120, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, rgba(0, 255, 120, 0.03) 0%, transparent 50%),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    background-size: 
+      200px 200px,
+      300px 300px,
+      250px 250px,
+      20px 20px;
+    background-position: 
+      0% 0%,
+      100% 100%,
+      50% 50%,
+      0% 0%;
+    animation: backgroundShift 20s ease-in-out infinite;
+    opacity: 0.8;
     z-index: -1;
   }
   
@@ -285,8 +296,30 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: 
+      linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.02) 50%, transparent 100%),
+      linear-gradient(0deg, transparent 0%, rgba(255, 0, 255, 0.02) 50%, transparent 100%);
+    background-size: 200px 100%, 100% 200px;
+    animation: scanlines 2s linear infinite;
     z-index: -1;
+  }
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 80% 20%, 100% 100%;
+  }
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 
@@ -296,20 +329,36 @@ body {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  backdrop-filter: blur(1px);
 }
 
-/* Typography */
+/* Enhanced Typography */
 .game-title {
   font-size: 4rem;
   font-weight: 900;
   text-align: center;
   color: #fff;
   text-shadow: 
-    0 0 20px rgba(255, 255, 255, 0.5),
-    0 0 40px rgba(255, 255, 255, 0.3),
-    0 0 60px rgba(255, 255, 255, 0.1);
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(0, 255, 255, 0.3),
+    0 0 40px rgba(255, 0, 255, 0.2),
+    0 0 60px rgba(0, 255, 255, 0.1);
   margin-bottom: 1rem;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  animation: slideInFromTop 1s ease-out;
+  position: relative;
+}
+
+.game-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ff00, transparent);
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .game-subtitle {
@@ -318,6 +367,19 @@ body {
   color: #ccc;
   margin-bottom: 3rem;
   font-style: italic;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+  position: relative;
+}
+
+.game-subtitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: #00ff00;
+  animation: typing 2s steps(20) 1s both;
 }
 
 .screen-title {
@@ -326,7 +388,18 @@ body {
   text-align: center;
   color: #fff;
   margin-bottom: 2rem;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(0, 255, 255, 0.2);
+  animation: scaleIn 0.8s ease-out;
+  position: relative;
+}
+
+.typing-text {
+  overflow: hidden;
+  border-right: 2px solid #00ff00;
+  white-space: nowrap;
+  animation: typing 3s steps(40) infinite, blink 1s infinite;
 }
 
 /* Buttons */
