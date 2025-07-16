@@ -6,6 +6,224 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const WS_URL = BACKEND_URL.replace('https:', 'wss:').replace('http:', 'ws:');
 
+// Matrix Rain Effect Component
+const MatrixRain = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+    const charArray = chars.split('');
+    
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1;
+    }
+    
+    const draw = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#00ff00';
+      ctx.font = `${fontSize}px monospace`;
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+    
+    const interval = setInterval(draw, 50);
+    
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
+  return <canvas ref={canvasRef} className="matrix-rain" />;
+};
+
+// Particles Effect Component
+const Particles = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const particleCount = 100;
+    
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        life: Math.random() * 100 + 100,
+        maxLife: Math.random() * 100 + 100,
+      });
+    }
+    
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach((particle, index) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life--;
+        
+        if (particle.life <= 0) {
+          particles[index] = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            life: Math.random() * 100 + 100,
+            maxLife: Math.random() * 100 + 100,
+          };
+        }
+        
+        const alpha = particle.life / particle.maxLife;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    };
+    
+    const interval = setInterval(draw, 16);
+    
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
+  return <canvas ref={canvasRef} className="particles" />;
+};
+
+// Glitch Text Component
+const GlitchText = ({ text, className = '' }) => {
+  return (
+    <span className={`glitch ${className}`} data-text={text}>
+      {text}
+    </span>
+  );
+};
+
+// Typing Text Component
+const TypingText = ({ text, speed = 100, className = '' }) => {
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, speed);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, text, speed]);
+  
+  return (
+    <span className={`typing-text ${className}`}>
+      {displayText}
+    </span>
+  );
+};
+
+// Connection Status Component
+const ConnectionStatus = ({ ws }) => {
+  const [status, setStatus] = useState('connecting');
+  
+  useEffect(() => {
+    if (!ws) {
+      setStatus('disconnected');
+      return;
+    }
+    
+    const handleOpen = () => setStatus('connected');
+    const handleClose = () => setStatus('disconnected');
+    const handleError = () => setStatus('disconnected');
+    
+    ws.addEventListener('open', handleOpen);
+    ws.addEventListener('close', handleClose);
+    ws.addEventListener('error', handleError);
+    
+    return () => {
+      ws.removeEventListener('open', handleOpen);
+      ws.removeEventListener('close', handleClose);
+      ws.removeEventListener('error', handleError);
+    };
+  }, [ws]);
+  
+  const statusText = {
+    connecting: 'Connexion...',
+    connected: 'Connecté',
+    disconnected: 'Déconnecté'
+  };
+  
+  return (
+    <div className={`status-indicator ${status}`}>
+      {statusText[status]}
+    </div>
+  );
+};
+
+// Loading Component
+const Loading = ({ text = 'Chargement...', type = 'spinner' }) => {
+  if (type === 'dots') {
+    return (
+      <div className="loading-dots">
+        <div className="loading-dot"></div>
+        <div className="loading-dot"></div>
+        <div className="loading-dot"></div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+      {text && <span style={{ marginLeft: '10px' }}>{text}</span>}
+    </div>
+  );
+};
+
 function App() {
   const [currentScreen, setCurrentScreen] = useState('home');
   const [playerName, setPlayerName] = useState('');
@@ -24,6 +242,8 @@ function App() {
   const [gameMessage, setGameMessage] = useState('');
   const [publicSessions, setPublicSessions] = useState([]);
   const [ws, setWs] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
 
   const wsRef = useRef(null);
 
