@@ -164,7 +164,7 @@ def test_role_assignment_and_game_start():
     # Create a session and add 20 players
     session_data = test_api_endpoint(
         "POST", "/create-session",
-        data={"player_name": "GameHost", "is_public": True},
+        params={"player_name": "GameHost", "is_public": True},
         test_name="Role assignment - Create session for 20 players"
     )
     
@@ -194,7 +194,7 @@ def test_role_assignment_and_game_start():
     # Test starting game with non-host (should fail)
     non_host_start = test_api_endpoint(
         "POST", f"/start-game/{session_id}",
-        data={"host_id": players[1]["id"]},  # Non-host player
+        params={"host_id": players[1]["id"]},  # Non-host player
         expected_status=403,
         test_name="Role assignment - Non-host start game (should fail)"
     )
@@ -205,7 +205,7 @@ def test_role_assignment_and_game_start():
     # Test starting game with host
     start_result = test_api_endpoint(
         "POST", f"/start-game/{session_id}",
-        data={"host_id": host_id},
+        params={"host_id": host_id},
         test_name="Role assignment - Host start game"
     )
     
