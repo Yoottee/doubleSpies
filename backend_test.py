@@ -98,14 +98,14 @@ def test_session_management():
     # Test creating public session
     public_session = test_api_endpoint(
         "POST", "/create-session",
-        data={"player_name": "PublicHost", "is_public": True},
+        params={"player_name": "PublicHost", "is_public": True},
         test_name="Session management - Create public session"
     )
     
     # Test creating private session
     private_session = test_api_endpoint(
         "POST", "/create-session", 
-        data={"player_name": "PrivateHost", "is_public": False},
+        params={"player_name": "PrivateHost", "is_public": False},
         test_name="Session management - Create private session"
     )
     
