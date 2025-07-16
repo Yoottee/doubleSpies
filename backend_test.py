@@ -348,7 +348,7 @@ def test_websocket_communication():
     # Create a session for WebSocket testing
     session_data = test_api_endpoint(
         "POST", "/create-session",
-        data={"player_name": "WSTestHost", "is_public": True},
+        params={"player_name": "WSTestHost", "is_public": True},
         test_name="WebSocket - Create session for WS testing"
     )
     
