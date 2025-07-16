@@ -322,12 +322,133 @@ function App() {
     }
   };
 
+  const createSession = async (isPublic = true) => {
+    if (!playerName.trim()) {
+      alert('Veuillez entrer un nom de joueur');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API}/create-session`, null, {
+        params: { player_name: playerName.trim(), is_public: isPublic }
+      });
+      setSessionId(response.data.session_id);
+      setSessionCode(response.data.session_code);
+      setPlayerId(response.data.player_id);
+      setIsHost(true);
+      setCurrentScreen('lobby');
+      await fetchSession();
+    } catch (error) {
+      console.error('Error creating session:', error);
+      alert('Erreur lors de la création de la session');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const joinSession = async (sessionIdOrCode = null) => {
+    if (!playerName.trim()) {
+      alert('Veuillez entrer un nom de joueur');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const request = {
+        player_name: playerName.trim(),
+        session_id: sessionIdOrCode || sessionId,
+        session_code: sessionIdOrCode ? null : sessionCode
+      };
+      
+      const response = await axios.post(`${API}/join-session`, request);
+      setSessionId(response.data.session_id);
+      setPlayerId(response.data.player_id);
+      setIsHost(false);
+      setCurrentScreen('lobby');
+      await fetchSession();
+    } catch (error) {
+      console.error('Error joining session:', error);
+      alert('Erreur lors de la connexion à la session');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const startGame = async () => {
+    setIsLoading(true);
+    try {
+      await axios.post(`${API}/start-game/${sessionId}`, null, {
+        params: { host_id: playerId }
+      });
+    } catch (error) {
+      console.error('Error starting game:', error);
+      alert('Erreur lors du démarrage de la partie');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const submitSynonym = async () => {
+    if (!currentSynonym.trim()) {
+      alert('Veuillez entrer un synonyme');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await axios.post(`${API}/submit-synonym`, {
+        session_id: sessionId,
+        player_id: playerId,
+        synonym: currentSynonym.trim()
+      });
+      setCurrentSynonym('');
+      setGameMessage('Synonyme soumis! En attente des autres joueurs...');
+    } catch (error) {
+      console.error('Error submitting synonym:', error);
+      alert('Erreur lors de la soumission du synonyme');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const submitVote = async () => {
+    if (!selectedVote) {
+      alert('Veuillez sélectionner un joueur à éliminer');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await axios.post(`${API}/vote`, {
+        session_id: sessionId,
+        voter_id: playerId,
+        voted_player_id: selectedVote
+      });
+      setSelectedVote('');
+      setGameMessage('Vote soumis! En attente des autres joueurs...');
+    } catch (error) {
+      console.error('Error submitting vote:', error);
+      alert('Erreur lors du vote');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchPublicSessions = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${API}/public-sessions`);
-      setPublicSessions(response.data);
+      setPublicSessions(response.data.map(session => ({
+        ...session,
+        status: session.player_count >= 20 ? 'full' : 
+                session.game_started ? 'playing' : 'waiting'
+      })));
     } catch (error) {
       console.error('Error fetching public sessions:', error);
+      alert('Erreur lors du chargement des sessions publiques');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -340,82 +461,43 @@ function App() {
     }
   };
 
-  const createSession = async (isPublic = true) => {
-    try {
-      const response = await axios.post(`${API}/create-session`, null, {
-        params: { player_name: playerName, is_public: isPublic }
-      });
-      setSessionId(response.data.session_id);
-      setSessionCode(response.data.session_code);
-      setPlayerId(response.data.player_id);
-      setIsHost(true);
-      setCurrentScreen('lobby');
-      fetchSession();
-    } catch (error) {
-      console.error('Error creating session:', error);
-      alert('Erreur lors de la création de la session');
+  // Enhanced WebSocket connection management
+  const connectWebSocket = () => {
+    if (wsRef.current) {
+      wsRef.current.close();
     }
-  };
-
-  const joinSession = async (sessionIdOrCode = null) => {
-    try {
-      const request = {
-        player_name: playerName,
-        session_id: sessionIdOrCode || sessionId,
-        session_code: sessionIdOrCode ? null : sessionCode
-      };
-      
-      const response = await axios.post(`${API}/join-session`, request);
-      setSessionId(response.data.session_id);
-      setPlayerId(response.data.player_id);
-      setIsHost(false);
-      setCurrentScreen('lobby');
-      fetchSession();
-    } catch (error) {
-      console.error('Error joining session:', error);
-      alert('Erreur lors de la connexion à la session');
-    }
-  };
-
-  const startGame = async () => {
-    try {
-      await axios.post(`${API}/start-game/${sessionId}`, null, {
-        params: { host_id: playerId }
-      });
-    } catch (error) {
-      console.error('Error starting game:', error);
-      alert('Erreur lors du démarrage de la partie');
-    }
-  };
-
-  const submitSynonym = async () => {
-    try {
-      await axios.post(`${API}/submit-synonym`, {
-        session_id: sessionId,
-        player_id: playerId,
-        synonym: currentSynonym
-      });
-      setCurrentSynonym('');
-      setGameMessage('Synonyme soumis! En attente des autres joueurs...');
-    } catch (error) {
-      console.error('Error submitting synonym:', error);
-      alert('Erreur lors de la soumission du synonyme');
-    }
-  };
-
-  const submitVote = async () => {
-    try {
-      await axios.post(`${API}/vote`, {
-        session_id: sessionId,
-        voter_id: playerId,
-        voted_player_id: selectedVote
-      });
-      setSelectedVote('');
-      setGameMessage('Vote soumis! En attente des autres joueurs...');
-    } catch (error) {
-      console.error('Error submitting vote:', error);
-      alert('Erreur lors du vote');
-    }
+    
+    setConnectionStatus('connecting');
+    const websocket = new WebSocket(`${WS_URL}/ws/${sessionId}/${playerId}`);
+    
+    websocket.onopen = () => {
+      console.log('WebSocket connected');
+      setConnectionStatus('connected');
+    };
+    
+    websocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      handleWebSocketMessage(data);
+    };
+    
+    websocket.onclose = () => {
+      console.log('WebSocket disconnected');
+      setConnectionStatus('disconnected');
+      // Auto-reconnect after 3 seconds
+      setTimeout(() => {
+        if (sessionId && playerId) {
+          connectWebSocket();
+        }
+      }, 3000);
+    };
+    
+    websocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setConnectionStatus('disconnected');
+    };
+    
+    wsRef.current = websocket;
+    setWs(websocket);
   };
 
   const renderHome = () => (
