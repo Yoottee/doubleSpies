@@ -652,59 +652,80 @@ function App() {
   const renderGame = () => (
     <div className="screen game-screen">
       <div className="spy-background">
+        <MatrixRain />
+        <Particles />
         <div className="content-overlay">
           <div className="game-header">
-            <h2>Double Spies</h2>
+            <GlitchText text="Double Spies" className="h2" />
             <div className="game-info">
               <div className="role-info">
-                <span className="role-badge">{playerRole}</span>
-                {playerWord && <span className="word-badge">Mot: {playerWord}</span>}
+                <span className={`role-badge ${playerRole?.toLowerCase()}`}>
+                  {playerRole === 'MasterMind' && '🕵️ MasterMind'}
+                  {playerRole === 'Visitor' && '👤 Visitor'}
+                  {playerRole === 'Tester' && '🔍 Tester'}
+                </span>
+                {playerWord && (
+                  <span className="word-badge">
+                    💭 Mot: {playerWord}
+                  </span>
+                )}
               </div>
               <div className="phase-info">
-                <span className="phase-badge">{currentPhase}</span>
+                <span className={`phase-badge ${currentPhase === 'synonym_writing' ? 'active' : ''}`}>
+                  {currentPhase === 'synonym_writing' && '✍️ Écriture'}
+                  {currentPhase === 'voting' && '🗳️ Vote'}
+                  {currentPhase === 'finished' && '🏁 Terminé'}
+                </span>
               </div>
             </div>
           </div>
           
           {gameMessage && (
-            <div className="game-message">
-              {gameMessage}
+            <div className={`game-message ${
+              gameMessage.includes('gagné') ? 'success' : 
+              gameMessage.includes('éliminé') ? 'error' : 'warning'
+            }`}>
+              <TypingText text={gameMessage} speed={50} />
             </div>
           )}
           
           {currentPhase === 'synonym_writing' && (
             <div className="synonym-phase">
-              <h3>Écrivez un synonyme</h3>
+              <h3>✍️ Écrivez un synonyme</h3>
               {playerRole === 'MasterMind' && (
-                <p className="role-instruction">
-                  En tant que MasterMind, vous devez deviner le mot et écrire un synonyme plausible.
-                </p>
+                <div className="role-instruction">
+                  🕵️ <strong>MasterMind:</strong> Vous devez deviner le mot et écrire un synonyme plausible pour vous fondre dans la masse.
+                </div>
               )}
               {playerRole === 'Visitor' && (
-                <p className="role-instruction">
-                  En tant que Visitor, vous avez un mot différent. Essayez de vous fondre dans la masse.
-                </p>
+                <div className="role-instruction">
+                  👤 <strong>Visitor:</strong> Vous avez un mot différent. Essayez de vous fondre dans la masse en écrivant un synonyme créatif.
+                </div>
               )}
               {playerRole === 'Tester' && (
-                <p className="role-instruction">
-                  En tant que Tester, écrivez un synonyme de votre mot.
-                </p>
+                <div className="role-instruction">
+                  🔍 <strong>Tester:</strong> Écrivez un synonyme de votre mot pour aider les autres Testers à vous identifier.
+                </div>
               )}
               
               <div className="synonym-input">
-                <input
-                  type="text"
-                  placeholder="Votre synonyme"
-                  value={currentSynonym}
-                  onChange={(e) => setCurrentSynonym(e.target.value)}
-                  className="spy-input"
-                />
+                <div className="input-group">
+                  <label className="input-label">Votre synonyme</label>
+                  <input
+                    type="text"
+                    placeholder="Entrez votre synonyme..."
+                    value={currentSynonym}
+                    onChange={(e) => setCurrentSynonym(e.target.value)}
+                    className="spy-input"
+                    maxLength={50}
+                  />
+                </div>
                 <button 
-                  className="spy-button primary" 
+                  className="spy-button primary glow" 
                   onClick={submitSynonym}
-                  disabled={!currentSynonym}
+                  disabled={!currentSynonym || isLoading}
                 >
-                  Soumettre
+                  {isLoading ? <Loading type="dots" /> : '📝 Soumettre'}
                 </button>
               </div>
             </div>
@@ -712,38 +733,47 @@ function App() {
           
           {currentPhase === 'voting' && (
             <div className="voting-phase">
-              <h3>Vote d'élimination</h3>
-              <p>Choisissez un joueur à éliminer en regardant les synonymes:</p>
+              <h3>🗳️ Vote d'élimination</h3>
+              <p>Analysez les synonymes et choisissez un joueur à éliminer:</p>
               
               <div className="synonyms-list">
-                {Object.entries(synonyms).map(([playerId, synonym]) => {
+                {Object.entries(synonyms).map(([playerId, synonym], index) => {
                   const player = gameSession?.players?.find(p => p.id === playerId);
                   return (
-                    <div key={playerId} className="synonym-item">
-                      <span className="player-name">{player?.name}: </span>
-                      <span className="synonym">{synonym}</span>
+                    <div 
+                      key={playerId} 
+                      className="synonym-item"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <span className="player-name">👤 {player?.name}: </span>
+                      <span className="synonym">"{synonym}"</span>
                     </div>
                   );
                 })}
               </div>
               
               <div className="vote-section">
-                <select 
-                  value={selectedVote} 
-                  onChange={(e) => setSelectedVote(e.target.value)}
-                  className="spy-select"
-                >
-                  <option value="">Choisir un joueur à éliminer</option>
-                  {gameSession?.players?.filter(p => p.is_alive && p.id !== playerId).map(player => (
-                    <option key={player.id} value={player.id}>{player.name}</option>
-                  ))}
-                </select>
+                <div className="input-group">
+                  <label className="input-label">Choisir un joueur à éliminer</label>
+                  <select 
+                    value={selectedVote} 
+                    onChange={(e) => setSelectedVote(e.target.value)}
+                    className="spy-select"
+                  >
+                    <option value="">-- Sélectionnez un joueur --</option>
+                    {gameSession?.players?.filter(p => p.is_alive && p.id !== playerId).map(player => (
+                      <option key={player.id} value={player.id}>
+                        👤 {player.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <button 
-                  className="spy-button primary" 
+                  className="spy-button primary glow" 
                   onClick={submitVote}
-                  disabled={!selectedVote}
+                  disabled={!selectedVote || isLoading}
                 >
-                  Voter
+                  {isLoading ? <Loading type="dots" /> : '🗳️ Voter'}
                 </button>
               </div>
             </div>
@@ -751,17 +781,24 @@ function App() {
           
           {currentPhase === 'finished' && (
             <div className="game-finished">
-              <h3>Partie terminée!</h3>
-              <div className="final-message">
-                {gameMessage}
+              <h3>🏁 Partie terminée!</h3>
+              <div className={`final-message ${
+                gameMessage.includes('Testers') ? 'victory' : 
+                gameMessage.includes('MasterMind') || gameMessage.includes('Visitor') ? 'defeat' : ''
+              }`}>
+                <TypingText text={gameMessage} speed={80} />
               </div>
-              <button className="spy-button primary" onClick={() => setCurrentScreen('home')}>
-                Retour à l'accueil
+              <button 
+                className="spy-button primary large pulse" 
+                onClick={() => setCurrentScreen('home')}
+              >
+                🏠 Retour à l'accueil
               </button>
             </div>
           )}
         </div>
       </div>
+      <ConnectionStatus ws={ws} />
     </div>
   );
 
