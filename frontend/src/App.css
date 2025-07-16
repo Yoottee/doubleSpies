@@ -402,65 +402,103 @@ body {
   animation: typing 3s steps(40) infinite, blink 1s infinite;
 }
 
-/* Buttons */
+/* Enhanced Buttons with Advanced Effects */
 .spy-button {
+  position: relative;
   background: linear-gradient(45deg, #0066cc, #004499);
   border: none;
   color: white;
   padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   box-shadow: 
     0 4px 15px rgba(0, 102, 204, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0.5rem;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.spy-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+  z-index: -1;
+}
+
+.spy-button:hover::before {
+  left: 100%;
 }
 
 .spy-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.05);
   box-shadow: 
     0 8px 25px rgba(0, 102, 204, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 20px rgba(0, 102, 204, 0.3);
 }
 
 .spy-button:active {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.1s ease;
 }
 
 .spy-button.primary {
   background: linear-gradient(45deg, #cc0000, #990000);
   box-shadow: 
     0 4px 15px rgba(204, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .spy-button.primary:hover {
   box-shadow: 
     0 8px 25px rgba(204, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 20px rgba(204, 0, 0, 0.3);
 }
 
 .spy-button.secondary {
   background: linear-gradient(45deg, #333, #555);
   box-shadow: 
     0 4px 15px rgba(51, 51, 51, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.spy-button.secondary:hover {
+  box-shadow: 
+    0 8px 25px rgba(51, 51, 51, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 20px rgba(51, 51, 51, 0.3);
 }
 
 .spy-button.tertiary {
   background: transparent;
   border: 2px solid #666;
-  box-shadow: none;
+  box-shadow: 
+    0 4px 15px rgba(102, 102, 102, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .spy-button.tertiary:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: #999;
+  box-shadow: 
+    0 8px 25px rgba(102, 102, 102, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .spy-button.small {
@@ -477,6 +515,48 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.spy-button:disabled:hover {
+  transform: none;
+  box-shadow: 
+    0 4px 15px rgba(0, 102, 204, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Glowing Button Effect */
+.spy-button.glow {
+  animation: buttonGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes buttonGlow {
+  0% {
+    box-shadow: 
+      0 4px 15px rgba(0, 102, 204, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    box-shadow: 
+      0 4px 15px rgba(0, 102, 204, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 0 20px rgba(0, 102, 204, 0.4);
+  }
+}
+
+/* Pulsing Button Effect */
+.spy-button.pulse {
+  animation: buttonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* Inputs */
