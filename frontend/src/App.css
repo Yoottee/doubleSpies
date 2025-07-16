@@ -559,54 +559,123 @@ body {
   }
 }
 
-/* Inputs */
+/* Enhanced Inputs with Futuristic Effects */
 .spy-input {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   color: white;
   padding: 1rem;
   font-size: 1.1rem;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   margin: 0.5rem;
   width: 100%;
   max-width: 400px;
+  position: relative;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.spy-input::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .spy-input:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+  border-color: #00ff00;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.3),
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+}
+
+.spy-input:focus::before {
+  opacity: 1;
 }
 
 .spy-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease;
+}
+
+.spy-input:focus::placeholder {
+  color: rgba(0, 255, 0, 0.7);
 }
 
 .spy-select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   color: white;
   padding: 1rem;
   font-size: 1.1rem;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   margin: 0.5rem;
   width: 100%;
   max-width: 400px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .spy-select:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+  border-color: #00ff00;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.3),
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
 }
 
 .spy-select option {
   background: #1a1a2e;
   color: white;
+  padding: 0.5rem;
+}
+
+/* Form Groups */
+.input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.input-error {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.input-success {
+  color: #00ff00;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
 }
 
 /* Home Screen */
