@@ -257,11 +257,6 @@ function App() {
       }
     };
   }, [sessionId, playerId]);
-
-  const connectWebSocket = () => {
-    if (wsRef.current) {
-      wsRef.current.close();
-    }
     
     setConnectionStatus('connecting');
     const websocket = new WebSocket(`${WS_URL}/ws/${sessionId}/${playerId}`);
@@ -918,6 +913,5 @@ function App() {
       {renderScreen()}
     </div>
   );
-}
 
 export default App;
