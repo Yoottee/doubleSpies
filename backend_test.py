@@ -55,14 +55,14 @@ class TestResults:
 
 results = TestResults()
 
-def test_api_endpoint(method: str, endpoint: str, data=None, expected_status=200, test_name=""):
+def test_api_endpoint(method: str, endpoint: str, data=None, params=None, expected_status=200, test_name=""):
     """Helper function to test API endpoints"""
     try:
         url = f"{API_URL}{endpoint}"
         if method.upper() == "GET":
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, params=params, timeout=10)
         elif method.upper() == "POST":
-            response = requests.post(url, json=data, timeout=10)
+            response = requests.post(url, json=data, params=params, timeout=10)
         else:
             raise ValueError(f"Unsupported method: {method}")
         
