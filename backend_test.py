@@ -365,7 +365,7 @@ def test_websocket_communication():
             ws_url = BASE_URL.replace('https://', 'wss://').replace('http://', 'ws://')
             ws_endpoint = f"{ws_url}/ws/{session_id}/{player_id}"
             
-            async with websockets.connect(ws_endpoint, timeout=10) as websocket:
+            async with websockets.connect(ws_endpoint) as websocket:
                 # Connection successful
                 results.log_pass("WebSocket - Connection established")
                 
