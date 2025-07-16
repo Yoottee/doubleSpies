@@ -475,50 +475,84 @@ function App() {
   const renderJoin = () => (
     <div className="screen join-screen">
       <div className="spy-background">
+        <MatrixRain />
+        <Particles />
         <div className="content-overlay">
-          <h2 className="screen-title">Rejoindre une partie</h2>
+          <TypingText text="Rejoindre une partie" className="screen-title" speed={60} />
           
           <div className="join-options">
-            <div className="join-section">
-              <h3>Avec un code</h3>
-              <input
-                type="text"
-                placeholder="Code de la partie"
-                value={sessionCode}
-                onChange={(e) => setSessionCode(e.target.value)}
-                className="spy-input"
-              />
-              <button className="spy-button primary" onClick={() => joinSession()}>
-                Rejoindre
+            <div className="join-section slide-in-left">
+              <h3>🔒 Avec un code</h3>
+              <div className="input-group">
+                <label className="input-label">Code de la partie</label>
+                <input
+                  type="text"
+                  placeholder="Ex: ABC123"
+                  value={sessionCode}
+                  onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
+                  className="spy-input"
+                  maxLength={6}
+                />
+              </div>
+              <button 
+                className="spy-button primary glow" 
+                onClick={() => joinSession()}
+                disabled={!sessionCode || isLoading}
+              >
+                {isLoading ? <Loading type="dots" /> : 'Rejoindre'}
               </button>
             </div>
             
-            <div className="join-section">
-              <h3>Parties publiques</h3>
-              <button className="spy-button secondary" onClick={fetchPublicSessions}>
-                Actualiser
+            <div className="join-section slide-in-right">
+              <h3>🌐 Parties publiques</h3>
+              <button 
+                className="spy-button secondary pulse" 
+                onClick={fetchPublicSessions}
+                disabled={isLoading}
+              >
+                {isLoading ? <Loading type="dots" /> : '🔄 Actualiser'}
               </button>
               <div className="public-sessions">
-                {publicSessions.map(session => (
-                  <div key={session.id} className="session-card">
-                    <div className="session-info">
-                      <h4>Hôte: {session.host_name}</h4>
-                      <p>Joueurs: {session.player_count}/20</p>
-                    </div>
-                    <button className="spy-button small" onClick={() => joinSession(session.id)}>
-                      Rejoindre
-                    </button>
+                {publicSessions.length === 0 ? (
+                  <div className="waiting-message">
+                    <TypingText text="Aucune partie publique disponible..." speed={50} />
                   </div>
-                ))}
+                ) : (
+                  publicSessions.map((session, index) => (
+                    <div key={session.id} className="session-card" style={{ animationDelay: `${index * 0.1}s` }}>
+                      <div className="session-info">
+                        <h4>👑 Hôte: {session.host_name}</h4>
+                        <p>👥 Joueurs: {session.player_count}/20</p>
+                        <div className={`session-status ${session.status}`}>
+                          {session.status === 'waiting' && '⏳ En attente'}
+                          {session.status === 'playing' && '🎮 En cours'}
+                          {session.status === 'full' && '🚫 Complète'}
+                        </div>
+                      </div>
+                      <button 
+                        className="spy-button small" 
+                        onClick={() => joinSession(session.id)}
+                        disabled={session.status !== 'waiting' || isLoading}
+                      >
+                        {isLoading ? <Loading type="dots" /> : 'Rejoindre'}
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
           
-          <button className="spy-button tertiary" onClick={() => setCurrentScreen('home')}>
-            Retour
+          <button 
+            className="spy-button tertiary" 
+            onClick={() => setCurrentScreen('home')}
+            disabled={isLoading}
+          >
+            ← Retour
           </button>
         </div>
       </div>
+      <ConnectionStatus ws={ws} />
     </div>
   );
 
