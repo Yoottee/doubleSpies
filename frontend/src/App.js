@@ -421,35 +421,54 @@ function App() {
   const renderHome = () => (
     <div className="screen home-screen">
       <div className="spy-background">
+        <MatrixRain />
+        <Particles />
         <div className="content-overlay">
-          <h1 className="game-title">DOUBLE SPIES</h1>
-          <p className="game-subtitle">Jeu de déduction sociale</p>
+          <GlitchText text="DOUBLE SPIES" className="game-title" />
+          <TypingText text="Jeu de déduction sociale" className="game-subtitle" speed={80} />
           
           <div className="player-input">
-            <input
-              type="text"
-              placeholder="Votre nom de joueur"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              className="spy-input"
-            />
+            <div className="input-group">
+              <label className="input-label">Nom de joueur</label>
+              <input
+                type="text"
+                placeholder="Entrez votre nom..."
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                className="spy-input"
+                maxLength={20}
+              />
+            </div>
           </div>
           
           {playerName && (
             <div className="game-options">
-              <button className="spy-button primary" onClick={() => createSession(true)}>
-                Créer une partie publique
+              <button 
+                className="spy-button primary large glow" 
+                onClick={() => createSession(true)}
+                disabled={isLoading}
+              >
+                {isLoading ? <Loading type="dots" /> : 'Créer une partie publique'}
               </button>
-              <button className="spy-button secondary" onClick={() => createSession(false)}>
-                Créer une partie privée
+              <button 
+                className="spy-button secondary large" 
+                onClick={() => createSession(false)}
+                disabled={isLoading}
+              >
+                {isLoading ? <Loading type="dots" /> : 'Créer une partie privée'}
               </button>
-              <button className="spy-button tertiary" onClick={() => setCurrentScreen('join')}>
+              <button 
+                className="spy-button tertiary large" 
+                onClick={() => setCurrentScreen('join')}
+                disabled={isLoading}
+              >
                 Rejoindre une partie
               </button>
             </div>
           )}
         </div>
       </div>
+      <ConnectionStatus ws={ws} />
     </div>
   );
 
