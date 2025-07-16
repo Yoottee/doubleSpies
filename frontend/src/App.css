@@ -1261,14 +1261,20 @@ body {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+/* Enhanced Game Elements */
 .role-instruction {
   background: rgba(0, 102, 204, 0.1);
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
   margin-bottom: 2rem;
   border-left: 4px solid #0066cc;
   color: #ccc;
   font-style: italic;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 4px 15px rgba(0, 102, 204, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: slideInFromLeft 0.8s ease-out;
 }
 
 .synonym-input {
@@ -1276,32 +1282,71 @@ body {
   gap: 1rem;
   align-items: center;
   justify-content: center;
+  animation: slideInFromBottom 0.8s ease-out;
 }
 
 .synonyms-list {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1rem;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.5rem;
+  border-radius: 15px;
   margin-bottom: 2rem;
   max-height: 300px;
   overflow-y: auto;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .synonym-item {
-  padding: 0.5rem 1rem;
-  margin-bottom: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  overflow: hidden;
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.synonym-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.synonym-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.synonym-item:hover::before {
+  opacity: 1;
 }
 
 .synonym-item .player-name {
-  color: #0066cc;
+  color: #00ff00;
   font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
 }
 
 .synonym-item .synonym {
   color: #fff;
+  font-size: 1.1rem;
+  margin-top: 0.3rem;
 }
 
 .vote-section {
@@ -1309,17 +1354,93 @@ body {
   gap: 1rem;
   align-items: center;
   justify-content: center;
+  animation: slideInFromRight 0.8s ease-out;
+}
+
+.vote-button {
+  background: linear-gradient(45deg, #ff6b6b, #ff0000);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 
+    0 4px 15px rgba(255, 107, 107, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.vote-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.vote-button:hover::before {
+  left: 100%;
+}
+
+.vote-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 8px 25px rgba(255, 107, 107, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.vote-button:active {
+  transform: translateY(0) scale(1.02);
+}
+
+.vote-button.selected {
+  background: linear-gradient(45deg, #00ff00, #00cc00);
+  box-shadow: 
+    0 4px 15px rgba(0, 255, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.vote-button.selected:hover {
+  box-shadow: 
+    0 8px 25px rgba(0, 255, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .final-message {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 15px;
   text-align: center;
   margin-bottom: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
   font-size: 1.3rem;
   color: #fff;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: scaleIn 1s ease-out;
+}
+
+.final-message.victory {
+  border-color: rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.final-message.defeat {
+  border-color: rgba(255, 0, 0, 0.3);
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff6b6b;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 .waiting-message {
@@ -1327,6 +1448,122 @@ body {
   color: #ccc;
   font-style: italic;
   margin-top: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.timer-display {
+  background: linear-gradient(45deg, #ff6b6b, #ff0000);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 
+    0 4px 15px rgba(255, 107, 107, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.timer-display.warning {
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff00, #00cc00);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Loading States */
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #00ff00;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff00;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Status Indicators */
+.status-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 1000;
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.status-indicator.connected {
+  background: rgba(0, 255, 0, 0.2);
+  color: #00ff00;
+  border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.status-indicator.disconnected {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.status-indicator.connecting {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 /* Responsive Design */
